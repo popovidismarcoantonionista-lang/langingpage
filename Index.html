@@ -358,4 +358,66 @@
     },{threshold:0.1});
     document.querySelectorAll('.scroll-reveal').forEach(el=>observer.observe(el));
 
-  
+    // Element SDK
+    const defaultConfig = {
+      hero_title: 'Transforme Jogos em Shorts Virais com IA',
+      hero_subtitle: 'A IA mais avançada do mercado detecta automaticamente os melhores momentos dos jogos e gera cortes prontos para viralizar.',
+      cta_text: 'COMPRAR ACESSO VITALÍCIO',
+      background_color: '#050505',
+      surface_color: '#101010',
+      text_color: '#FFFFFF',
+      accent_color: '#00FF88',
+      secondary_accent: '#00E676',
+      font_family: 'Outfit',
+      font_size: 16
+    };
+
+    window.elementSdk.init({
+      defaultConfig,
+      onConfigChange: async (config) => {
+        const t = document.getElementById('hero-title');
+        const title = config.hero_title || defaultConfig.hero_title;
+        t.innerHTML = title.includes('Shorts Virais') ? title.replace('Shorts Virais','<span class="gradient-text">Shorts Virais</span>') : `<span class="gradient-text">${title}</span>`;
+        
+        document.getElementById('hero-subtitle').textContent = config.hero_subtitle || defaultConfig.hero_subtitle;
+        
+        const cta = config.cta_text || defaultConfig.cta_text;
+        document.getElementById('offer-cta').querySelector('.relative.z-10').innerHTML = `<i data-lucide="rocket" class="w-6 h-6"></i> ${cta}`;
+
+        const font = config.font_family || defaultConfig.font_family;
+        document.body.style.fontFamily = `${font}, sans-serif`;
+
+        const size = config.font_size || defaultConfig.font_size;
+        document.body.style.fontSize = size + 'px';
+
+        const bg = config.background_color || defaultConfig.background_color;
+        document.body.style.backgroundColor = bg;
+
+        const accent = config.accent_color || defaultConfig.accent_color;
+        document.documentElement.style.setProperty('--accent', accent);
+
+        lucide.createIcons();
+      },
+      mapToCapabilities: (config) => ({
+        recolorables: [
+          { get:()=>config.background_color||defaultConfig.background_color, set:(v)=>{config.background_color=v;window.elementSdk.setConfig({background_color:v})} },
+          { get:()=>config.surface_color||defaultConfig.surface_color, set:(v)=>{config.surface_color=v;window.elementSdk.setConfig({surface_color:v})} },
+          { get:()=>config.text_color||defaultConfig.text_color, set:(v)=>{config.text_color=v;window.elementSdk.setConfig({text_color:v})} },
+          { get:()=>config.accent_color||defaultConfig.accent_color, set:(v)=>{config.accent_color=v;window.elementSdk.setConfig({accent_color:v})} },
+          { get:()=>config.secondary_accent||defaultConfig.secondary_accent, set:(v)=>{config.secondary_accent=v;window.elementSdk.setConfig({secondary_accent:v})} }
+        ],
+        borderables: [],
+        fontEditable: { get:()=>config.font_family||defaultConfig.font_family, set:(v)=>{config.font_family=v;window.elementSdk.setConfig({font_family:v})} },
+        fontSizeable: { get:()=>config.font_size||defaultConfig.font_size, set:(v)=>{config.font_size=v;window.elementSdk.setConfig({font_size:v})} }
+      }),
+      mapToEditPanelValues: (config) => new Map([
+        ['hero_title', config.hero_title || defaultConfig.hero_title],
+        ['hero_subtitle', config.hero_subtitle || defaultConfig.hero_subtitle],
+        ['cta_text', config.cta_text || defaultConfig.cta_text]
+      ])
+    });
+
+    lucide.createIcons();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0908e7c889bcae0',t:'MTc4MTAxMjUxNQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
