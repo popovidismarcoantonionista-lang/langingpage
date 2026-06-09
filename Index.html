@@ -1,1 +1,361 @@
+<!doctype html>
+<html lang="pt-BR" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fut Shorts AI</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'Outfit', sans-serif; }
+    
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+    @keyframes glow-pulse { 0%,100%{box-shadow:0 0 30px #00FF8855,0 0 60px #00FF8833,inset 0 0 30px #00FF8811} 50%{box-shadow:0 0 50px #00FF8877,0 0 100px #00FF8855,inset 0 0 50px #00FF8822} }
+    @keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+    @keyframes fade-up { from{opacity:0;transform:translateY(40px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes grid-move { 0%{transform:perspective(500px) rotateX(60deg) translateY(0)} 100%{transform:perspective(500px) rotateX(60deg) translateY(50px)} }
+    @keyframes particle-float { 0%{transform:translateY(100%) scale(0);opacity:0} 50%{opacity:1} 100%{transform:translateY(-100%) scale(1);opacity:0} }
+    @keyframes scan-line { 0%{top:-2px} 100%{top:100%} }
+    @keyframes light-ray { 0%{opacity:0;transform:scaleY(0)} 50%{opacity:0.6} 100%{opacity:0;transform:scaleY(1)} }
+    @keyframes progress-fill { 0%{width:0} 100%{width:100%} }
+    @keyframes ai-analyzing { 0%{width:20%} 50%{width:70%} 100%{width:90%} }
+    @keyframes step-rotate { 0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)} }
+    @keyframes card-glow { 0%,100%{box-shadow:0 0 20px rgba(0,255,136,0.1),0 20px 40px rgba(0,255,136,0.05)} 50%{box-shadow:0 0 40px rgba(0,255,136,0.2),0 20px 60px rgba(0,255,136,0.1)} }
+    @keyframes rotate-border { 0%{background-position:0% 50%} 100%{background-position:100% 50%} }
+    @keyframes blur-in { from{backdrop-filter:blur(0px);opacity:0} to{backdrop-filter:blur(20px);opacity:1} }
 
+    .animate-fade-up { animation: fade-up 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; opacity:0; }
+    .delay-1 { animation-delay: 0.15s }
+    .delay-2 { animation-delay: 0.3s }
+    .delay-3 { animation-delay: 0.45s }
+    .delay-4 { animation-delay: 0.6s }
+    .delay-5 { animation-delay: 0.75s }
+
+    .gradient-text { background: linear-gradient(135deg, #00FF88 0%, #33FF99 50%, #00E676 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; filter: drop-shadow(0 0 20px rgba(0,255,136,0.3)); }
+    
+    .glow-btn { 
+      background: linear-gradient(135deg, #00FF88, #00FFC6);
+      animation: glow-pulse 3s ease-in-out infinite;
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+      overflow: hidden;
+    }
+    .glow-btn:hover { 
+      transform: scale(1.08) translateY(-3px);
+      box-shadow: 0 0 80px #00FF8899, 0 0 150px #00FF8866, 0 20px 60px #00FF8844;
+    }
+    .glow-btn .shimmer { 
+      position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent);background-size:200% 100%;animation:shimmer 2.5s ease-in-out infinite;
+    }
+
+    .glass-card { 
+      background: rgba(16, 16, 16, 0.6);
+      backdrop-filter: blur(25px) brightness(1.1);
+      border: 1px solid rgba(0, 255, 136, 0.15);
+      transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+      animation: card-glow 4s ease-in-out infinite;
+      position: relative;
+      overflow: hidden;
+    }
+    .glass-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(0,255,136,0.1) 0%, transparent 70%);
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
+    .glass-card:hover {
+      border-color: rgba(0, 255, 136, 0.5);
+      transform: translateY(-8px);
+      box-shadow: 0 0 50px rgba(0,255,136,0.2), 0 30px 80px rgba(0,255,136,0.1), inset 0 1px 0 rgba(255,255,255,0.1);
+      background: rgba(16, 16, 16, 0.8);
+    }
+    .glass-card:hover::before { opacity: 1; }
+
+    .neon-border { 
+      border: 2px solid transparent;
+      background: linear-gradient(rgba(16,16,16,0.9), rgba(16,16,16,0.9)) padding-box, linear-gradient(135deg, #00FF88, #00E676) border-box;
+      box-shadow: 0 0 30px #00FF8855, inset 0 0 30px #00FF8811, 0 20px 60px rgba(0,255,136,0.1);
+      animation: glow-pulse 3s ease-in-out infinite;
+    }
+
+    .grid-bg { position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden; }
+    .grid-bg::before { 
+      content:'';position:absolute;width:200%;height:200%;top:-50%;left:-50%;
+      background-image:
+        linear-gradient(rgba(0,255,136,0.05) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(0,255,136,0.05) 1px,transparent 1px);
+      background-size:80px 80px;
+      animation:grid-move 30s linear infinite;
+    }
+    .grid-bg::after {
+      content:'';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(0,255,136,0.1) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .particle { 
+      position:absolute;
+      width:4px;height:4px;
+      background:#00FF88;
+      border-radius:50%;
+      animation:particle-float linear infinite;
+      box-shadow:0 0 8px #00FF88, 0 0 20px rgba(0,255,136,0.6);
+    }
+
+    .mockup-container { 
+      position:relative;
+      background: linear-gradient(135deg, rgba(10,10,10,0.9) 0%, rgba(16,16,16,0.8) 100%);
+      border-radius:16px;
+      border: 1px solid rgba(0,255,136,0.2);
+      overflow: hidden;
+      padding:24px;
+      box-shadow: 0 0 40px rgba(0,255,136,0.1), inset 0 1px 0 rgba(255,255,255,0.05);
+      animation: blur-in 0.8s ease-out;
+    }
+    .mockup-container::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent 0%, rgba(0,255,136,0.03) 50%, transparent 100%);
+      pointer-events: none;
+    }
+    .mockup-container .scan-line { 
+      position:absolute;left:0;width:100%;height:2px;
+      background:linear-gradient(90deg,transparent,#00FF88,transparent);
+      animation:scan-line 4s linear infinite;opacity:0.4;
+    }
+
+    .step-indicator { 
+      width:48px;height:48px;
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:700;
+      border:2px solid #00FF88;
+      color:#00FF88;
+      font-size:16px;
+      background: rgba(0,255,136,0.05);
+      transition: all 0.3s;
+    }
+    .step-active { 
+      background:#00FF88;
+      color:#050505;
+      box-shadow: 0 0 20px #00FF8855;
+    }
+
+    .floating { animation: float 4s ease-in-out infinite; }
+
+    .scroll-reveal { opacity:0;transform:translateY(40px);transition:all 0.9s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    .scroll-reveal.visible { opacity:1;transform:translateY(0); }
+
+    html,body { background:#050505;overflow-x:hidden; }
+    
+    .hero-badge {
+      animation: fade-up 0.8s ease-out 0.1s both;
+    }
+    
+    .feature-icon {
+      transition: all 0.4s ease-out;
+    }
+    
+    .glass-card:hover .feature-icon {
+      transform: scale(1.2) rotate(5deg);
+    }
+  </style>
+  <style>body { box-sizing: border-box; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ <script src="/_sdk/telemetry_sdk.js"></script></head>
+ <body class="h-full bg-[#050505] text-white overflow-auto">
+  <div class="grid-bg"></div>
+  <div id="particles"></div>
+  <div class="relative z-10 w-full">
+   <!-- Nav -->
+   <nav class="w-full px-6 py-5 flex items-center justify-between max-w-7xl mx-auto animate-fade-up">
+    <div class="flex items-center gap-2">
+     <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-[#00FF88] to-[#00E676] flex items-center justify-center">
+      <i data-lucide="zap" class="w-5 h-5 text-[#050505]"></i>
+     </div><span class="text-xl font-bold">Fut Shorts <span class="gradient-text">AI</span></span>
+    </div><a href="#oferta" class="hidden sm:inline-flex px-5 py-2 rounded-full border border-[#00FF88]/30 text-[#00FF88] text-sm font-medium hover:bg-[#00FF88]/10 transition">Garantir Acesso</a>
+   </nav><!-- Hero -->
+   <section class="w-full px-6 pt-16 pb-24 max-w-7xl mx-auto text-center">
+    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#00FF88]/10 border border-[#00FF88]/20 text-[#00FF88] text-sm font-medium mb-8 animate-fade-up">
+     <i data-lucide="sparkles" class="w-4 h-4"></i> <span>Inteligência Artificial para Futebol</span>
+    </div>
+    <h1 id="hero-title" class="text-4xl sm:text-6xl lg:text-7xl font-900 leading-tight mb-6 animate-fade-up delay-1">Transforme Jogos em<br><span class="gradient-text">Shorts Virais</span> com IA</h1>
+    <p id="hero-subtitle" class="text-lg sm:text-xl text-[#B5B5B5] max-w-2xl mx-auto mb-10 animate-fade-up delay-2">A IA mais avançada do mercado detecta automaticamente os melhores momentos dos jogos e gera cortes prontos para viralizar.</p><!-- Mockup -->
+    <div class="mt-16 animate-fade-up delay-4">
+     <div class="mockup-container max-w-3xl mx-auto">
+      <div class="scan-line"></div>
+      <div class="flex items-center gap-2 mb-4">
+       <div class="w-3 h-3 rounded-full bg-red-500"></div>
+       <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+       <div class="w-3 h-3 rounded-full bg-green-500"></div><span class="text-xs text-[#B5B5B5] ml-2">Fut Shorts AI — Processing</span>
+      </div>
+      <div id="mockup-steps" class="space-y-3">
+       <div class="flex items-center gap-3 p-3 rounded-lg bg-[#0B0B0B] border border-[#00FF88]/10">
+        <div class="step-indicator step-active">
+         1
+        </div>
+        <div class="flex-1">
+         <div class="text-sm font-medium text-white">
+          Upload do vídeo completo
+         </div>
+         <div class="mt-1 h-1.5 rounded-full bg-[#1a1a1a] overflow-hidden">
+          <div class="h-full bg-gradient-to-r from-[#00FF88] to-[#00FFC6] rounded-full" style="width:100%;animation:progress-fill 2s ease-out"></div>
+         </div>
+        </div><i data-lucide="check-circle" class="w-5 h-5 text-[#00FF88]"></i>
+       </div>
+       <div class="flex items-center gap-3 p-3 rounded-lg bg-[#0B0B0B] border border-[#00FF88]/10">
+        <div class="step-indicator step-active">
+         2
+        </div>
+        <div class="flex-1">
+         <div class="text-sm font-medium text-white">
+          IA analisando conteúdo...
+         </div>
+         <div class="mt-1 h-1.5 rounded-full bg-[#1a1a1a] overflow-hidden">
+          <div class="h-full bg-gradient-to-r from-[#00FF88] to-[#00FFC6] rounded-full" style="animation:ai-analyzing 3s ease-in-out infinite"></div>
+         </div>
+        </div><i data-lucide="brain" class="w-5 h-5 text-[#00FF88]" style="animation:step-rotate 2s linear infinite"></i>
+       </div>
+       <div class="flex items-center gap-3 p-3 rounded-lg bg-[#0B0B0B] border border-[#00FF88]/10">
+        <div class="step-indicator">
+         3
+        </div>
+        <div class="flex-1">
+         <div class="text-sm font-medium text-[#B5B5B5]">
+          Gerando 8 shorts otimizados
+         </div>
+        </div><i data-lucide="loader" class="w-5 h-5 text-[#B5B5B5]"></i>
+       </div>
+       <div class="flex items-center gap-3 p-3 rounded-lg bg-[#0B0B0B] border border-[#00FF88]/10">
+        <div class="step-indicator">
+         4
+        </div>
+        <div class="flex-1">
+         <div class="text-sm font-medium text-[#B5B5B5]">
+          Download em lote
+         </div>
+        </div><i data-lucide="download" class="w-5 h-5 text-[#B5B5B5]"></i>
+       </div>
+      </div>
+     </div>
+    </div>
+   </section><!-- Features -->
+   <section class="w-full px-6 py-20 max-w-7xl mx-auto">
+    <h2 class="text-3xl sm:text-4xl font-bold text-center mb-4 scroll-reveal">Por que escolher o <span class="gradient-text">Fut Shorts AI</span>?</h2>
+    <p class="text-[#B5B5B5] text-center mb-14 scroll-reveal">Tecnologia de ponta para criadores de conteúdo de futebol</p>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+     <div class="glass-card rounded-2xl p-8 scroll-reveal hover:scale-105">
+      <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#00FF88]/20 to-[#00E676]/10 flex items-center justify-center mb-6 feature-icon"><i data-lucide="brain" class="w-8 h-8 text-[#00FF88]"></i>
+      </div>
+      <h3 class="font-bold text-xl mb-3">IA Avançada</h3>
+      <p class="text-sm text-[#B5B5B5] leading-relaxed">Detecta gols, dribles espetaculares, defesas incríveis e lances polêmicos automaticamente com precisão 99%.</p>
+     </div>
+     <div class="glass-card rounded-2xl p-8 scroll-reveal hover:scale-105">
+      <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#00FF88]/20 to-[#00E676]/10 flex items-center justify-center mb-6 feature-icon"><i data-lucide="zap" class="w-8 h-8 text-[#00FF88]"></i>
+      </div>
+      <h3 class="font-bold text-xl mb-3">Ultra Rápido</h3>
+      <p class="text-sm text-[#B5B5B5] leading-relaxed">Processa jogos completos em minutos. Gera dezenas de cortes prontos para publicar instantaneamente.</p>
+     </div>
+     <div class="glass-card rounded-2xl p-8 scroll-reveal hover:scale-105">
+      <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#00FF88]/20 to-[#00E676]/10 flex items-center justify-center mb-6 feature-icon"><i data-lucide="trending-up" class="w-8 h-8 text-[#00FF88]"></i>
+      </div>
+      <h3 class="font-bold text-xl mb-3">Otimizado para Viralizar</h3>
+      <p class="text-sm text-[#B5B5B5] leading-relaxed">Cortes no formato perfeito para TikTok, Reels e Shorts. Títulos e descrições automáticas.</p>
+     </div>
+     <div class="glass-card rounded-2xl p-8 scroll-reveal hover:scale-105">
+      <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#00FF88]/20 to-[#00E676]/10 flex items-center justify-center mb-6 feature-icon"><i data-lucide="layers" class="w-8 h-8 text-[#00FF88]"></i>
+      </div>
+      <h3 class="font-bold text-xl mb-3">Download em Lote</h3>
+      <p class="text-sm text-[#B5B5B5] leading-relaxed">Baixe todos os shorts gerados de uma vez com um clique. Economize horas de trabalho.</p>
+     </div>
+     <div class="glass-card rounded-2xl p-8 scroll-reveal hover:scale-105">
+      <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#00FF88]/20 to-[#00E676]/10 flex items-center justify-center mb-6 feature-icon"><i data-lucide="infinity" class="w-8 h-8 text-[#00FF88]"></i>
+      </div>
+      <h3 class="font-bold text-xl mb-3">Acesso Vitalício</h3>
+      <p class="text-sm text-[#B5B5B5] leading-relaxed">Pague uma única vez e use para sempre. Sem mensalidades escondidas, sem surpresas.</p>
+     </div>
+     <div class="glass-card rounded-2xl p-8 scroll-reveal hover:scale-105">
+      <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#00FF88]/20 to-[#00E676]/10 flex items-center justify-center mb-6 feature-icon"><i data-lucide="refresh-cw" class="w-8 h-8 text-[#00FF88]"></i>
+      </div>
+      <h3 class="font-bold text-xl mb-3">Atualizações Grátis</h3>
+      <p class="text-sm text-[#B5B5B5] leading-relaxed">Todas as melhorias futuras e novas funcionalidades incluídas no seu acesso permanente.</p>
+     </div>
+    </div>
+   </section><!-- Oferta -->
+   <section id="oferta" class="w-full px-6 py-24 max-w-4xl mx-auto relative">
+    <div class="absolute -inset-40 bg-gradient-to-br from-[#00FF88]/10 via-transparent to-[#00E676]/5 blur-3xl pointer-events-none"></div>
+    <div class="neon-border rounded-3xl p-8 sm:p-16 text-center relative overflow-hidden scroll-reveal">
+     <div class="absolute inset-0 bg-gradient-to-br from-[#00FF88]/8 via-[#0B0B0B] to-transparent pointer-events-none"></div>
+     <div class="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-gradient-to-b from-[#00FF88]/20 to-transparent blur-3xl pointer-events-none opacity-50"></div>
+     <div class="relative z-10">
+      <div class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-[#00FF88]/20 to-[#00E676]/20 border border-[#00FF88]/40 text-[#00FF88] font-bold text-sm mb-8 hero-badge">
+       <span class="text-xl">🔥</span> ACESSO VITALÍCIO EXCLUSIVO
+      </div>
+      <h2 class="text-4xl sm:text-6xl lg:text-7xl font-900 mb-6 leading-tight">Pagamento <span class="gradient-text">Único</span> <br class="hidden sm:block">
+        Benefícios <span class="gradient-text">Infinitos</span></h2>
+      <p class="text-lg text-[#B5B5B5] max-w-2xl mx-auto mb-10">Invista uma única vez e tenha acesso vitalício com atualizações contínuas incluídas.</p>
+      <div class="grid sm:grid-cols-2 gap-4 mb-12 max-w-xl mx-auto">
+       <div class="glass-card rounded-xl p-4 flex items-center gap-3">
+        <i data-lucide="check-circle-2" class="w-6 h-6 text-[#00FF88] flex-shrink-0"></i> <span class="text-sm font-medium">Sem mensalidades</span>
+       </div>
+       <div class="glass-card rounded-xl p-4 flex items-center gap-3">
+        <i data-lucide="check-circle-2" class="w-6 h-6 text-[#00FF88] flex-shrink-0"></i> <span class="text-sm font-medium">Atualizações grátis</span>
+       </div>
+       <div class="glass-card rounded-xl p-4 flex items-center gap-3">
+        <i data-lucide="check-circle-2" class="w-6 h-6 text-[#00FF88] flex-shrink-0"></i> <span class="text-sm font-medium">Suporte prioritário</span>
+       </div>
+       <div class="glass-card rounded-xl p-4 flex items-center gap-3">
+        <i data-lucide="check-circle-2" class="w-6 h-6 text-[#00FF88] flex-shrink-0"></i> <span class="text-sm font-medium">IA em evolução</span>
+       </div>
+      </div>
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-6 mb-8">
+       <a href="#" id="offer-cta" class="glow-btn relative inline-flex px-12 py-6 rounded-xl text-[#050505] font-bold text-xl overflow-hidden hover:scale-110 transition-transform"> <span class="shimmer"></span> <span class="relative z-10 flex items-center gap-3"><i data-lucide="rocket" class="w-7 h-7"></i> COMPRAR ACESSO VITALÍCIO</span> </a>
+      </div>
+      <p class="text-sm text-[#B5B5B5]">✓ Acesso imediato após a compra | ✓ Sem período de teste</p>
+     </div>
+    </div>
+   </section><!-- CTA Final -->
+   <section class="w-full px-6 py-24 text-center relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-t from-[#00FF88]/5 via-transparent to-transparent pointer-events-none"></div>
+    <div class="relative z-10 max-w-4xl mx-auto scroll-reveal">
+     <h2 class="text-3xl sm:text-5xl lg:text-6xl font-900 mb-6">Comece a criar <span class="gradient-text">shorts virais</span> agora</h2>
+     <p class="text-[#B5B5B5] text-lg mb-10 max-w-xl mx-auto">Junte-se a criadores que já automatizaram sua produção de conteúdo com IA.</p>
+    </div>
+   </section><!-- Footer -->
+   <footer class="w-full px-6 py-8 border-t border-white/5 text-center text-sm text-[#B5B5B5]">
+    <p>© 2024 Fut Shorts AI. Todos os direitos reservados.</p>
+   </footer>
+  </div>
+  <script>
+    // Particles
+    const particlesContainer = document.getElementById('particles');
+    particlesContainer.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;overflow:hidden';
+    for(let i=0;i<20;i++){
+      const p = document.createElement('div');
+      p.className='particle';
+      p.style.left=Math.random()*100+'%';
+      p.style.animationDuration=(4+Math.random()*6)+'s';
+      p.style.animationDelay=Math.random()*5+'s';
+      p.style.opacity=Math.random()*0.5+0.2;
+      particlesContainer.appendChild(p);
+    }
+
+    // Scroll reveal
+    const observer = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')});
+    },{threshold:0.1});
+    document.querySelectorAll('.scroll-reveal').forEach(el=>observer.observe(el));
+
+  
